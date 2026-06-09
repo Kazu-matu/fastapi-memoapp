@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}メモアプリ{% endblock %}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1><a href="/">📝 メモアプリ</a></h1>
+    <span class="login-user">ログイン: {{ login_user }}</span>
+  </header>
+
+  <main class="container">
+    {% if msg == "created" %}
+      <div class="flash flash--success">✅ メモを登録しました。</div>
+    {% elif msg == "updated" %}
+      <div class="flash flash--success">✅ メモを更新しました。</div>
+    {% elif msg == "deleted" %}
+      <div class="flash flash--info">🗑️ メモを削除しました。</div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <small>メモアプリ &copy; 2025 — <a href="/docs" target="_blank">API ドキュメント</a></small>
+  </footer>
+</body>
+</html>

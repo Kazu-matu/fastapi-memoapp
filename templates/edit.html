@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}メモ編集 — {{ memo.title }}{% endblock %}
+
+{% block content %}
+<!-- ========== 編集フォーム ========== -->
+<section class="card">
+  <div class="card-header">
+    <h2>メモ編集</h2>
+    <a href="/" class="btn btn--sm">← 一覧へ戻る</a>
+  </div>
+
+  <form method="post" action="/memos/{{ memo.memo_id }}/edit" class="memo-form">
+    <div class="form-row">
+      <label for="title">タイトル <span class="required">*</span></label>
+      <input type="text" id="title" name="title" required maxlength="50"
+             value="{{ memo.title }}">
+    </div>
+
+    <div class="form-row">
+      <label for="description">詳細</label>
+      <textarea id="description" name="description" maxlength="255">{{ memo.description or '' }}</textarea>
+    </div>
+
+    <div class="form-row form-row--inline">
+      <div>
+        <label for="priority">優先度</label>
+        <select id="priority" name="priority">
+          {% for p in priorities %}
+            <option value="{{ p }}" {{ 'selected' if memo.priority == p else '' }}>{{ p }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="due_date">期限日</label>
+        <input type="date" id="due_date" name="due_date"
+               value="{{ memo.due_date.strftime('%Y-%m-%d') if memo.due_date else '' }}">
+      </div>
+      <div class="checkbox-wrap">
+        <label>
+          <input type="checkbox" name="is_completed" value="true"
+                 {{ 'checked' if memo.is_completed else '' }}>
+          完了
+        </label>
+      </div>
+    </div>
+
+    <div class="meta-info">
+      <small>作成: {{ memo.created_at.strftime('%Y-%m-%d %H:%M') if memo.created_at else '—' }}
+        （{{ memo.created_by }}）</small>
+      {% if memo.updated_at %}
+      <small>最終更新: {{ memo.updated_at.strftime('%Y-%m-%d %H:%M') }}
+        （{{ memo.updated_by or '—' }}）</small>
+      {% endif %}
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">更新</button>
+      <a href="/" class="btn btn--ghost">キャンセル</a>
+    </div>
+  </form>
+</section>
+
+<!-- ========== 変更履歴 ========== -->
+<section class="card">
+  <h2>変更履歴</h2>
+  {% if histories %}
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>操作</th>
+          <th>担当者</th>
+          <th>日時</th>
+          <th>タイトル</th>
+          <th>優先度</th>
+          <th>完了</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in histories %}
+        <tr>
+          <td>
+            <span class="badge badge--action badge--{{ h.action | lower }}">{{ h.action }}</span>
+          </td>
+          <td>{{ h.changed_by }}</td>
+          <td>{{ h.changed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ h.title }}</td>
+          <td><span class="badge badge--{{ h.priority }}">{{ h.priority }}</span></td>
+          <td class="center">{{ '✅' if h.is_completed else '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="empty">履歴がありません。</p>
+  {% endif %}
+</section>
+{% endblock %}

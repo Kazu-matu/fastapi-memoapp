@@ -1,0 +1,24 @@
+# 環境設定（機密情報を含む可能性があるため除外）
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+dist/
+build/
+
+# DB ファイル
+*.sqlite
+*.db
+
+# テスト・カバレッジ
+.pytest_cache/
+htmlcov/
+.coverage
+
+# IDE
+.vscode/
+.idea/

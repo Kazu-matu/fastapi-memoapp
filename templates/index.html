@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}メモ一覧{% endblock %}
+
+{% block content %}
+<!-- ========== 新規作成フォーム ========== -->
+<section class="card">
+  <h2>新規メモ作成</h2>
+  <form method="post" action="/memos" class="memo-form">
+    <div class="form-row">
+      <label for="title">タイトル <span class="required">*</span></label>
+      <input type="text" id="title" name="title" required maxlength="50"
+             placeholder="タイトルを入力してください">
+    </div>
+
+    <div class="form-row">
+      <label for="description">詳細</label>
+      <textarea id="description" name="description" maxlength="255"
+                placeholder="詳細を入力してください（任意）"></textarea>
+    </div>
+
+    <div class="form-row form-row--inline">
+      <div>
+        <label for="priority">優先度</label>
+        <select id="priority" name="priority">
+          {% for p in priorities %}
+            <option value="{{ p }}">{{ p }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="due_date">期限日</label>
+        <input type="date" id="due_date" name="due_date">
+      </div>
+      <div class="checkbox-wrap">
+        <label>
+          <input type="checkbox" name="is_completed" value="true">
+          完了
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary">登録</button>
+    </div>
+  </form>
+</section>
+
+<!-- ========== メモ一覧 ========== -->
+<section class="card">
+  <h2>メモ一覧 <span class="badge">{{ memos | length }} 件</span></h2>
+
+  {% if memos %}
+  <div class="table-wrap">
+    <table class="memo-table">
+      <thead>
+        <tr>
+          <th>タイトル</th>
+          <th>詳細</th>
+          <th>優先度</th>
+          <th>期限日</th>
+          <th>完了</th>
+          <th>作成担当者</th>
+          <th>更新担当者</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for memo in memos %}
+        <tr class="{{ 'row--completed' if memo.is_completed else '' }}">
+          <td>{{ memo.title }}</td>
+          <td>{{ memo.description or '' }}</td>
+          <td>
+            <span class="badge badge--{{ memo.priority }}">{{ memo.priority }}</span>
+          </td>
+          <td>{{ memo.due_date.strftime('%Y-%m-%d') if memo.due_date else '—' }}</td>
+          <td class="center">{{ '✅' if memo.is_completed else '—' }}</td>
+          <td>{{ memo.created_by }}</td>
+          <td>{{ memo.updated_by or '—' }}</td>
+          <td class="actions">
+            <a href="/memos/{{ memo.memo_id }}/edit" class="btn btn--sm btn--edit">編集</a>
+            <form method="post" action="/memos/{{ memo.memo_id }}/delete"
+                  onsubmit="return confirm('削除してよろしいですか？')">
+              <button type="submit" class="btn btn--sm btn--danger">削除</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p class="empty">メモがありません。上のフォームから作成してください。</p>
+  {% endif %}
+</section>
+{% endblock %}
