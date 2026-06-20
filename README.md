@@ -146,6 +146,72 @@ fast_api_memoapp/
 
 ---
 
+## 新しいアプリの雛形を作る（create_template.py）
+
+このリポジトリには **テンプレート生成スクリプト** が含まれています。  
+コマンド 1 つで、FastAPI + Jinja2 + SQLAlchemy の雛形プロジェクトを生成し、そのまま GitHub テンプレートリポジトリとして公開できます。
+
+### 生成コマンド
+
+```bash
+# <アプリ名> は Python の識別子（英数字・アンダースコア、先頭は英字）
+uv run python create_template.py <アプリ名>
+
+# 例
+uv run python create_template.py expense_tracker
+```
+
+生成先: スクリプトと **同じ階層の上の親ディレクトリ** に `<アプリ名>/` フォルダが作られます。
+
+```
+D:\
+├── fastapi-memoapp\          ← このリポジトリ
+│   └── create_template.py
+└── expense_tracker\          ← 生成されるフォルダ
+    ├── main.py
+    ├── config.py / db.py / init_database.py
+    ├── models/ schemas/ cruds/ routers/ templates/ static/
+    ├── tests/  (unit / integration / e2e)
+    ├── docs/   (01_要件定義 〜 04_報告書 + 開発入門)
+    ├── CLAUDE.md
+    ├── .github/copilot-instructions.md
+    └── .github/workflows/ci.yml   ← GitHub Actions（自動テスト）
+```
+
+### 生成後の確認
+
+```bash
+cd ..\expense_tracker     # Windows
+cd ../expense_tracker     # Mac/Linux
+
+copy .env.example .env
+uv sync
+uv run python init_database.py
+uv run uvicorn main:app --reload
+# → http://localhost:8000/ を開いて動作確認
+
+# テストも即座に実行できる
+uv run pytest tests/unit/ tests/integration/ -v
+```
+
+### GitHub テンプレートリポジトリとして公開する
+
+```bash
+cd ..\expense_tracker
+
+git init
+git add .
+git commit -m "chore: initial template"
+
+# GitHub CLI でリポジトリ作成 & プッシュ
+gh repo create expense_tracker --public --source=. --remote=origin --push
+
+# 「Use this template」ボタンを有効化
+gh repo edit expense_tracker --template
+```
+
+---
+
 ## AI アシスタント向け指示ファイル
 
 このリポジトリには `.github/copilot-instructions.md` が含まれています。  

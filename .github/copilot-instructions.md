@@ -1,5 +1,10 @@
 # AI Development Instructions — FastAPI + Jinja2 + SQLAlchemy (Async)
 
+| 項目 | 内容 |
+|---|---|
+| 最終更新日 | 2026-06-20 |
+| 対象プロジェクト | FastAPI + Jinja2 + SQLAlchemy (Async) |
+
 > **For AI assistants**: GitHub Copilot, Cursor, Claude, ChatGPT, Gemini, and others.
 > Follow every rule in this file precisely. If you are unsure, ask the developer before proceeding.
 >
@@ -1136,4 +1141,97 @@ uv run mypy .
 git add {specific files}    # never use git add . blindly
 git commit -m "message"
 git push
+```
+
+---
+
+## 14. Security Check (Mandatory before release)
+
+セキュリティチェックは**リリース前に必ず実施**する。結果は `docs/04_報告書.md` に記録すること。
+
+### 14-1. 依存パッケージ脆弱性チェック（uv audit）
+
+```bash
+# 既知の CVE が含まれる依存パッケージを検出する
+uv audit
+```
+
+**判断基準:**
+
+| 重大度 | 対応 |
+|---|---|
+| Critical / High | 即座に修正（パッチバージョンへアップグレード、または代替パッケージに変更） |
+| Medium | リリース前に対応方針を決定し報告書に記載 |
+| Low | 報告書に記載のうえ次スプリントで対応 |
+
+**修正例:**
+
+```bash
+# 脆弱なパッケージをアップグレード
+uv add "パッケージ名>=安全なバージョン"
+uv sync
+uv audit  # 再チェック
+```
+
+### 14-2. 静的脆弱性チェック（bandit）
+
+```bash
+# bandit をインストール（dev グループに追加推奨）
+uv add --dev bandit
+
+# Python ソースコード全体をスキャン
+uv run bandit -r . -x .venv,tests -ll
+```
+
+**オプション説明:**
+
+| オプション | 意味 |
+|---|---|
+| `-r .` | カレントディレクトリを再帰的にスキャン |
+| `-x .venv,tests` | 仮想環境とテストを除外 |
+| `-ll` | Medium 以上の問題のみ表示（Low は参考程度） |
+
+**よくある検出パターンと対処:**
+
+| 検出内容 | 対処 |
+|---|---|
+| `B105` ハードコードパスワード | `.env` に移動し `os.getenv()` で読む |
+| `B311` 疑似乱数 | セキュリティ用途には `secrets` モジュールを使う |
+| `B608` SQL インジェクションリスク | SQLAlchemy ORM のみ使用。文字列結合クエリを禁止 |
+| `B506` YAML unsafe load | `yaml.safe_load()` を使う |
+
+### 14-3. 報告書への記載（必須）
+
+`docs/04_報告書.md` のセキュリティチェック欄に以下を記載する:
+
+```markdown
+## セキュリティチェック結果
+
+| チェック種別 | 実行日 | 結果 | 対応状況 |
+|---|---|---|---|
+| uv audit | YYYY-MM-DD | 問題なし / Critical×件 High×件 | 対応済み / 次スプリント対応 |
+| bandit | YYYY-MM-DD | 問題なし / High×件 Medium×件 | 対応済み / 次スプリント対応 |
+
+### uv audit 出力（抜粋）
+\`\`\`
+（uv audit の出力をここに貼り付ける）
+\`\`\`
+
+### bandit 出力（抜粋）
+\`\`\`
+（uv run bandit -r . -x .venv,tests -ll の出力をここに貼り付ける）
+\`\`\`
+```
+
+### 14-4. AI への指示
+
+- セキュリティチェックは **Step 5（テスト）の直後、Step 6（ドキュメント完成）の前** に実施する。
+- `uv audit` または `bandit` で Critical / High が検出された場合、**AI は修正提案を行い、ユーザーの承認なしにリリース手順を進めない**。
+- チェック結果を `docs/04_報告書.md` に記載するよう必ずユーザーに促す。
+
+```
+✅ Before release → run uv audit             → record in 04_報告書.md
+✅ Before release → run bandit               → record in 04_報告書.md
+✅ Critical/High found → fix before release
+✅ Medium/Low found    → document and plan
 ```
