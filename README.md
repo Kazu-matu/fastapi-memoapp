@@ -146,7 +146,38 @@ fast_api_memoapp/
 
 ---
 
+## AI アシスタント向け指示ファイル
+
+このリポジトリには `.github/copilot-instructions.md` が含まれています。  
+GitHub Copilot・Cursor・Claude・ChatGPT・Gemini など、どの AI ツールでも共通して使える開発ルールをまとめたファイルです。
+
+### 対応ツールと使い方
+
+| AI ツール | 読み込み方法 |
+| --- | --- |
+| GitHub Copilot | `.github/copilot-instructions.md` を自動で認識（設定不要） |
+| Cursor | チャットに「このファイルを守って実装して」と貼り付ける |
+| Claude Code | `CLAUDE.md` を参照（内容は同一ルールを日本語で記載） |
+| ChatGPT / Gemini | ファイル内容をコピーしてプロンプトの冒頭に貼り付ける |
+
+### 指示ファイルに含まれる内容
+
+- 技術スタックと変更禁止事項
+- ディレクトリ構成の規約
+- 実装の順番（models → schemas → cruds → routers → templates → tests）
+- 各レイヤーのコーディング規約とアンチパターン
+- セキュリティルール
+- テスト規約と最低限のテストケース一覧
+- AI に守らせる行動ルール（コミット禁止・確認なしの削除禁止など）
+
+新しいアプリを作るときはこのリポジトリをテンプレートとして複製し、  
+`.github/copilot-instructions.md` と `CLAUDE.md` をそのまま引き継ぐことで  
+AI アシスタントに一貫した開発ルールを適用できます。
+
+---
+
 ## ドキュメント
 
 - [仕様書](docs/仕様書.md) — ER 図・API 一覧・処理フロー・ファイル依存関係
 - [テスト仕様書・報告書](docs/テスト仕様書・報告書.md) — テスト仕様・実行結果
+- [AI 指示ファイル（英語）](.github/copilot-instructions.md) — 汎用 AI アシスタント向けルール
